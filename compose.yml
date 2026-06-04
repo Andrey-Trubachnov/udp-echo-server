@@ -1,0 +1,30 @@
+services:
+  echo-server:
+    build:
+      context: ./server
+    image: udp-echo-server:latest
+    container_name: echo-server
+    ports:
+      - "8888:8888/udp"
+    networks:
+      - my-network
+    cpus: 0.5
+    mem_limit: 256m
+    restart: unless-stopped
+
+  echo-client:
+    build:
+      context: ./client
+    image: udp-echo-client:latest
+    container_name: echo-client
+    networks:
+      - my-network
+    depends_on:
+      - echo-server
+    cpus: 0.2
+    mem_limit: 128m
+    restart: unless-stopped
+
+networks:
+  my-network:
+    driver: bridge
