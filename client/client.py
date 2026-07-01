@@ -1,14 +1,18 @@
 import socket
 import time
+import os
 
-SERVER_HOST = 'echo-server'
-SERVER_PORT = 8888
-MESSAGE = "Привет, UDP!"
+SERVER_HOST = os.getenv('SERVER_HOST', 'udp-server-service')
+SERVER_PORT = int(os.getenv('SERVER_PORT', 9999))
+
+count = 1
 
 while True:
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client:
-        client.sendto(MESSAGE.encode(), (SERVER_HOST, SERVER_PORT))
-        print(f"Отправлено: {MESSAGE}")
+        message = f'ping {count}'
+
+        client.sendto(message.encode(), (SERVER_HOST, SERVER_PORT))
+        print(f"Отправлено: {message}")
         
         client.settimeout(2)
         try:
@@ -17,4 +21,5 @@ while True:
         except socket.timeout:
             print("Нет ответа от сервера")
     
-    time.sleep(5)
+    count += 1
+    time.sleep(int(os.getenv('MESSAGE_INTERVAL', 5)))
