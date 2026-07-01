@@ -1,8 +1,9 @@
 import socket
+import os
 
 
 HOST = '0.0.0.0'
-PORT = 8888
+PORT = int(os.getenv('UDP_PORT', 8888))
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
     server.bind((HOST, PORT))
