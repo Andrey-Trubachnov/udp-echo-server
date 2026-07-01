@@ -1,0 +1,66 @@
+---
+# Сервис для server
+apiVersion: v1
+kind: Service
+metadata:
+  name: udp-server-service
+spec:
+  selector:
+    app: udp-server
+  ports:
+  - protocol: UDP
+    port: 9999
+    targetPort: 8888
+
+---
+# Deployment для server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udp-server
+  template:
+    metadata:
+      labels:
+        app: udp-server
+    spec:
+      containers:
+      - name: udp-server
+        image: andreytrubachnov/udp-echo-server:latest
+        ports:
+        - containerPort: 8888
+          protocol: UDP
+        env:
+        - name: UDP_PORT
+          value: "8888"
+
+---
+# Deployment для client
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udp-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udp-client
+  template:
+    metadata:
+      labels:
+        app: udp-client
+    spec:
+      containers:
+      - name: udp-client
+        image: andreytrubachnov/udp-echo-client:latest
+        env:
+        - name: SERVER_HOST
+          value: "udp-server-service"
+        - name: SERVER_PORT
+          value: "9999"
+        - name: MESSAGE_INTERVAL
+          value: "5"
